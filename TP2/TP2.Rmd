@@ -1,0 +1,464 @@
+---
+title: "TP2"
+author: "Gautier Poursin"
+date: "28/02/2020"
+output: pdf_document
+---
+
+Echantillon, Théorème Central Limite, Estimation Monte Carlo
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Loi Normale
+
+```{r cars}
+normal5<-c(rnorm(5000,mean=1, sd=2))
+normal30<-c(rnorm(30000, mean=1, sd=2))
+normal100<-c(rnorm(100000,mean=1, sd=2))
+
+par(mfrow=c(1,3))
+Normal5<-matrix(normal5,1000,5)
+Normal30<-matrix(normal30,1000,30)
+Normal100<-matrix(normal100,1000,100)
+
+moyennenormal5= rep(1,1000)
+for(i in 1:1000){
+  moyennenormal5[i] = mean(Normal5[i,])}
+
+hist(moyennenormal5)
+
+variancenormal5=rep(1,1000)
+for(i in 1:1000){
+  variancenormal5[i]=var(Normal5[i,])
+}
+
+moyennenormal30= rep(1,1000)
+for(i in 1:1000){
+  moyennenormal30[i] = mean(Normal30[i,])
+}
+hist(moyennenormal30)
+
+variancenormal30=rep(1,1000)
+for(i in 1:1000){
+  variancenormal30[i]=var(Normal30[i,])
+}
+
+moyennenormal100= rep(1,1000)
+for(i in 1:1000){
+  moyennenormal100[i] = mean(Normal100[i,])
+}
+hist(moyennenormal100)
+
+variancenormal100=rep(1,1000)
+for(i in 1:1000){
+  variancenormal100[i]=var(Normal100[i,])
+}
+
+```
+
+On choisi an=$\mathbb{E}[X]$, bn=$\sqrt{\mathbb{V}(X)}$ et on remarque que $Un,i\sim\mathcal N(0,1)$. On centre et on réduit la loi.
+
+```{r , echo=FALSE}
+
+par(mfrow=c(1,3))
+
+Ubis5<-(moyennenormal5-1)/sqrt(2)
+hist(Ubis5)
+
+Ubis30<-(moyennenormal30-1)/sqrt(2)
+hist(Ubis30)
+
+Ubis100<-(moyennenormal100-1)/sqrt(2)
+hist(Ubis100)
+
+```
+
+
+## Loi de Pareto
+
+````{r}
+
+library(rmutil)
+par(mfrow=c(1,3))
+pareto5<-c(rpareto(5000,m=1, s=2))
+pareto30<-c(rpareto(30000, m=1, s=2))
+pareto100<-c(rpareto(100000,m=1, s=2))
+
+Pareto5<-matrix(pareto5,1000,5)
+Pareto30<-matrix(pareto30,1000,30)
+Pareto100<-matrix(pareto100,1000,100)
+
+moyennepareto5= rep(1,1000)
+for(i in 1:1000){
+  moyennepareto5[i] = mean(Pareto5[i,])
+}
+hist(moyennepareto5)
+
+variancepareto5=rep(1,1000)
+for(i in 1:1000){
+  variancepareto5[i]=var(Pareto5[i,])
+}
+
+
+
+moyennepareto30= rep(1,1000)
+for(i in 1:1000){
+  moyennepareto30[i] = mean(Pareto30[i,])
+}
+hist(moyennepareto30)
+
+variancepareto30=rep(1,1000)
+for(i in 1:1000){
+  variancepareto30[i]=var(Pareto30[i,])
+}
+
+moyennepareto100= rep(1,1000)
+for(i in 1:1000){
+  moyennepareto100[i] = mean(Pareto100[i,])
+}
+hist(moyennepareto100)
+
+variancepareto100=rep(1,1000)
+for(i in 1:1000){
+  variancepareto100[i]=var(Pareto100[i,])
+}
+````
+
+On choisit an=$\mathbb{E}[X]$, bn=$\sqrt{\mathbb{V}(X)}$ et on remarque que les $Un,i\sim\mathcal N(0,1)$. On centre et on réduit la loi.
+
+```{r, echo=FALSE}
+
+par(mfrow=c(1,3))
+
+Unipareto5<- (moyennepareto5-1)/sqrt(2)
+hist(Unipareto5)
+
+Unipareto30<-(moyennepareto30-1)/sqrt(2)
+hist(Unipareto30)
+
+
+
+Unipareto100<-(moyennepareto100-1)/sqrt(2)
+hist(Unipareto100)
+```
+
+## Loi de Poisson
+
+````{r}
+poisson5<-c(rpois(5000,0.5))
+poisson30<-c(rpois(30000, 0.5))
+poisson100<-c(rpois(100000,0.5))
+
+Poisson5<-matrix(poisson5,1000,5)
+Poisson30<-matrix(poisson30,1000,30)
+Poisson100<-matrix(poisson100,1000,100)
+
+par(mfrow=c(1,3))
+
+moyennepoisson5= rep(1,1000)
+for(i in 1:1000){
+  moyennepoisson5[i] = mean(Poisson5[i,])
+}
+hist(moyennepoisson5)
+
+variancepoisson5=rep(1,1000)
+for(i in 1:1000){
+  variancepoisson5[i]=var(Poisson5[i,])
+}
+
+moyennepoisson30= rep(1,1000)
+for(i in 1:1000){
+  moyennepoisson30[i] = mean(Poisson30[i,])
+}
+hist(moyennepoisson30)
+
+variancepoisson30=rep(1,1000)
+for(i in 1:1000){
+  variancepoisson30[i]=var(Poisson30[i,])
+}
+
+moyennepoisson100= rep(1,1000)
+for(i in 1:1000){
+  moyennepoisson100[i] = mean(Poisson100[i,])
+}
+hist(moyennepoisson100)
+
+variancepoisson100=rep(1,1000)
+for(i in 1:1000){
+  variancepoisson100[i]=var(Poisson100[i,])
+}
+````
+
+
+On choisit an=$\mathbb{E}[X]$, bn=$\sqrt{\mathbb{V}(X)}$ et on remarque que les $Un,i\sim\mathcal N(0,1)$. On centre et on réduit la loi.
+
+```{r pressure, echo=FALSE}
+
+par(mfrow=c(1,3))
+Unipoisson5<-(moyennepoisson5-0.5)/sqrt(0.5)
+hist(Unipoisson5, proba=TRUE)
+
+
+Unipoisson30<-(moyennepoisson30-0.5)/sqrt(0.5)
+hist(Unipoisson30,proba=TRUE)
+
+Unipoisson100<-(moyennepoisson100-0.5)/sqrt(0.5)
+hist(Unipoisson100,proba=TRUE)
+```
+
+On peut donc approximer facilement une loi par une loi Normale centrée réduite. Plus la taille de l'échantillon est élevé (ie plus n est grand) et plus l'approximation sera proche de la réalité. N améliore la qualité de l'approximation
+
+## Moyenne et phénomène de concentration
+
+Si $X\sim\mathcal P(\lambda)$, alors
+$\mathbb{E}(X)=\lambda$ et
+$\mathbb{V}(X)=\lambda$ .
+Alors, $P(|X-\mathbb{E}(X)|>\epsilon)) \le \frac{\lambda}{\epsilon^2}$
+
+Si $X\sim\mathcal N(\mu,\sigma^2)$, alors
+$\mathbb{E}(X)=\mu$ et 
+$\mathbb{V}(X)=\sigma^2$.
+Alors, $P(|X-\mathbb{E(X)}|\geq\epsilon) \le (\frac{\sigma}{\epsilon})^2$
+
+On pose $Z = 1_{\{|X-\mu|\leq \delta\}}$ .On a ainsi $P(|X-\mu|\geq\delta) = E[Z]$
+
+
+
+## Loi Normale
+
+````{r}
+normalmontecarlo<-c(rnorm(1e5,mean=0, sd=1))
+
+meansNMC<-0
+delta<- 0.5
+
+normaleZN=rep(1:1e5)
+for (i in 1:1e5){
+if (abs(normalmontecarlo[i]-meansNMC)>=delta){
+  normaleZN[i]<-1
+}
+else normaleZN[i]<-0}
+
+meansnormaleZN<- mean(normaleZN)
+print(paste("Espérance Loi normale:", meansnormaleZN, sep=""))
+````
+
+## Loi de Poisson
+
+````{r}
+poissonmontecarlo<-c(rpois(1e5,lambda=1))
+
+meansPMC<-1
+delta<- 0.5
+
+poissonZN=rep(1:1e5)
+for (i in 1:1e5){
+if (abs(poissonmontecarlo[i]-meansPMC)>=delta){
+  poissonZN[i]<-1
+}
+else poissonZN[i]<-0}
+
+meanspoissonZN<-mean(poissonZN)
+print(paste("Espérance Loi de Poisson de paramètre lambda=1:", meanspoissonZN, sep=""))
+````
+
+## Loi de Pareto
+
+````{r}
+paretomontecarlo<-c(rpareto(1e5,m=1, s=2))
+meansParetoMC<-2*1/(2-1)
+delta<- 0.5
+
+paretoZN=rep(1:1e5)
+for (i in 1:1e5){
+if (abs(paretomontecarlo[i]-meansParetoMC)>=delta){
+  paretoZN[i]<-1
+}
+else paretoZN[i]<-0}
+
+meansparetoZN<-mean(paretoZN)
+print(paste("Espérance Loi de Pareto de paramètre m=1 et s=2:", meansparetoZN, sep=""))
+````
+
+
+## Bienaymé Tchebitchev
+
+````{r}
+for (delta in c(0.01,0.5,1)){
+  for (sigma in c(0.2,0.4,2)){
+    normalBT<-c(rnorm(1e5,mean=1, sigma))
+    meansBT=1
+    varNMC<-sigma**2
+
+    normaleZN=rep(1:1e5)
+    for (i in 1:1e5){
+      if (abs(normalBT[i]-meansBT)>=delta){
+        normaleZN[i]<-1
+        }
+      else normaleZN[i]<-0}
+    Borne<-varNMC/(delta**2)
+    meansnormaleBT<- mean(normaleZN)
+    print(paste("Espérance Loi normale pour delta = ", delta, ", sigma = ",sigma, " vaut ", meansnormaleBT, ", borne =" , Borne, sep=""))
+  }
+}
+
+for (delta in c(1,5,10)){
+  for(lambda in c(0.5,5,10)){
+  poissonBT<-c(rpois(1e5,lambda))
+  meansPBT<-lambda
+
+  varPMC<-lambda
+  poissonZN=rep(1:1e5)
+  for (i in 1:1e5){
+    if (abs(poissonBT[i]-meansPBT)>=delta){
+         poissonZN[i]<-1
+      }
+    else poissonZN[i]<-0}
+
+  Borne2<-lambda/(delta**2)
+    meanspoissonZN<-mean(poissonZN)
+   print(paste("Espérance Loi de Poisson de paramètre lambda=",lambda, ", delta= ", delta, " vaut ", meanspoissonZN, ", borne= ", Borne2, sep=""))
+  
+  }}
+
+for(delta in c(1,5,10)){
+  for (alpha in c(3,4,6)){
+    paretoBT<-c(rpareto(1e5,m=1, alpha))
+    varPBT<-alpha**2/((alpha-1)**2)*alpha/(alpha-2)
+    meansPBT<-alpha/(alpha-1)
+    paretoZN=rep(1:1e5)
+    for (i in 1:1e5){
+      if (abs(paretomontecarlo[i]-meansPBT)>=delta){
+        paretoZN[i]<-1
+      }
+      else paretoZN[i]<-0}
+    Borne3<-varPBT/(delta**2)
+      meansparetoZN<-mean(paretoZN)
+   print(paste("Espérance Loi de Pareto de paramètre a=1, alpha=", alpha, ", delta= ", delta, " vaut ", meansparetoZN, ", borne = ", Borne3, sep=""))
+    
+    
+  }
+}
+````
+
+Les bornes de Bienaymé Tchebitchev sont donc bien respectées.
+
+## Chernoff
+
+Si $X\sim\mathcal N(0,\sigma^2)$ , alors $\mathcal P(X > \epsilon) \le exp(-\frac{\epsilon^2}{2*\sigma^2})$
+
+````{r}
+sigma=2
+ech_normale=rnorm(n=20,mean=1,sigma)
+epsilon=0.5
+
+echexpborne=rep(1:20)
+for (i in 1:20){
+  if (ech_normale[i]>epsilon) echexpborne[i]=1
+  else echexpborne[i]=0
+}
+
+borneChernoff20=exp(-epsilon**2/(2*2**2))
+print(paste("espérance loi normale (sigma=2) pour n=20 =", mean(echexpborne), "la borne est ", borneChernoff20))
+
+sigma=2
+ech_normale=rnorm(n=100,mean=1,sigma)
+epsilon=0.5
+
+echexpborne=rep(1:100)
+for (i in 1:100){
+  if (ech_normale[i]>epsilon) echexpborne[i]=1
+  else echexpborne[i]=0
+}
+
+borneChernoff100=exp(-epsilon**2/(2*2**2))
+print(paste("espérance loi normale (sigma=2 pour n=100 =", mean(echexpborne), "la borne est ", borneChernoff100))
+
+ech_normale=rnorm(n=1000,mean=1,sigma)
+epsilon=0.5
+
+echexpborne=rep(1:1000)
+for (i in 1:1000){
+  if (ech_normale[i]>epsilon) echexpborne[i]=1
+  else echexpborne[i]=0
+}
+
+borneChernoff1000=exp(-epsilon**2/(2*2**2))
+print(paste("espérance loi normale (sigma=2) pour n=1000 =", mean(echexpborne), "la borne est ", borneChernoff1000))
+````
+
+
+Si $X\sim\mathcal P(\lambda)$ , alors $\mathcal P(X > \epsilon) \le exp(-\frac{\epsilon^2}{2*\lambda^2})$
+
+````{r}
+lambda=0.5
+ech_poisson=rpois(n=20,lambda)
+epsilon=0.3
+
+echpoissonborne=rep(1:20)
+for (i in 1:20){
+  if (ech_poisson[i]>epsilon) echpoissonborne[i]=1
+  else echpoissonborne[i]=0
+}
+
+borneChernoff20=exp(-epsilon**2/(2*lambda**2))
+print(paste("espérance loi poisson (lambda=0.5) pour n=20 =", mean(echpoissonborne), "la borne est ", borneChernoff20))
+
+ech_poisson=rpois(n=100,lambda)
+
+echpoissonborne=rep(1:100)
+for (i in 1:100){
+  if (ech_poisson[i]>epsilon) echpoissonborne[i]=1
+  else echpoissonborne[i]=0
+}
+
+borneChernoff100=exp(-epsilon**2/(2*lambda**2))
+print(paste("esperance loi poisson (lambda=0.5) pour n=100 =", mean(echpoissonborne), "la borne est ", borneChernoff100))
+
+ech_poisson=rpois(n=1000,lambda)
+
+echpoissonborne=rep(1:1000)
+for (i in 1:1000){
+  if (ech_poisson[i]>epsilon) echpoissonborne[i]=1
+  else echpoissonborne[i]=0
+}
+
+borneChernoff1000=exp(-epsilon**2/(2*lambda**2))
+print(paste("espérance loi poisson (lambda=0.5) pour n=1000 =", mean(echpoissonborne), "la borne est ", borneChernoff1000))
+````
+
+## Loi de Cauchy
+
+````{r}
+
+for (n in c(20,100,1000,10000,1e6)){
+  cauchy<-rcauchy(n, location=0, scale=1)
+  mean<-mean(cauchy)
+  print(paste("pour n= ", n, " la moyenne empirique est ", mean, sep=""))
+}
+````
+
+On remarque que la moyenne empirique diverge grossièrement. Plus n augmente et plus elle diverge. L'espérance ne converge donc pas.
+
+Plus il y a de valeurs et plus on risque de s'éloigné de la médiane donc la moyenne diverge.
+
+
+## Estimateur
+
+````{r}
+for (theta in c(-3,-2,-1,0,1,2,3)){
+for (n in c(20,100,1000)){
+  cauchy<-rcauchy(n, location=theta, scale=1)
+  rangé<-sort(cauchy)
+  print(paste("pour n= ", n, " theta= ",theta, " la médiane est ", (rangé[n/2]+rangé[n/2+1])/2, sep=""))}}
+````
+
+Le meilleur estimateur ici est Theta=0. En effet, les médianes sont proches des espérances calculées précédemment. Cela est logique car ces espérance ont été calculés pour theta=0. 
+
+## Conclusion
+
+Dans ce TP, nous avons tous d'abord travailler sur le théorème central limite. En réalisant différents échantillons de différentes lois, nous avons calculer leur moyenne empirique puis nous avons réaliser une renormalisation adéquate qui nous permet d'obtenir une loi normale centrée réduite. Il sufffit de prendre an=$\mathbb{E}(X)$ et bn=$\sqrt{\mathbb{V}(X)}$. La valeur de N permet d'améliorer la qualité de l'observation (plus N est grand et mieux est l'observation). 
+Ensuite,  nous nous sommes intéressés à différentes inégalités (Bienaymé-Tchebitchev,Chernoff...). Nous avons simuler plusieurs échantillons différents puis nous avons regarder les bornes des inégalités. On remarque que certains bornes sont absurdes (>1). Cela montre que certains majorations sont bien trop grossières. 
+Enfin, nous avons déduis un estimateur de théta d'une loi de cauchy en observant la médiane. Le meilleur estimateur est celui pour lequel la médiane se rapproche le plus du thétha de l'observation.
