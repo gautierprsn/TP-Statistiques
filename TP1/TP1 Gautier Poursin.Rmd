@@ -1,0 +1,278 @@
+---
+title: "TP1 Statistiques"
+author: "Gautier Poursin"
+date: "21 février 2020"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Gestion et sauvegarde des données
+
+``` {r}
+matrice.proba<-data.frame(gaussienne=rnorm(40,mean=0,sd=1),
+                          uniforme=runif(40,min=0,max=1),
+                          poisson=rpois(40,0.5),
+                          exponentielle=rexp(40,rate=1),
+                          chi2=rchisq(n=40,df=0.5),
+                          binomiale=rbinom(n=40,size=50,prob=0.2),
+                          cauchy=rcauchy(n=40,location=0,scale=1))
+cauchy<-c(cauchy100=rcauchy(n=100,location=0,scale=1))
+cauchy200<-c(cauchy200=rcauchy(n=200, location=0,scale=1))
+cauchy300<-c(cauchy300=rcauchy(n=300,location=0,scale=1))
+                   
+
+Histcauchy<-write.csv(cauchy,"~/Travail/ecole ingé/Stats/TP1/cauchy")
+Matriceproba<-write.csv(matrice.proba,"~/Travail/ecole ingé/Stats/TP1/Matriceproba")
+read.csv("~/Travail/ecole ingé/Stats/TP1/Matriceproba",header=TRUE)
+read.csv("~/Travail/ecole ingé/Stats/TP1/cauchy100",header=TRUE)
+
+
+vecteurloinormale<-c(normale=rnorm(40,mean=0,sd=1))
+vecteurloinormale100<-c(normale=rnorm(100,mean=0,sd=1))
+vecteurloinormale1000<-c(normale=rnorm(1000,mean=0,sd=1))
+````
+
+## Tracer les données
+
+```{r, echo=FALSE}
+
+par(mfrow=c(1,3))
+plot(vecteurloinormale, xlab="Valeurs n=40, mean=0 et sd=1")
+abline(h=0)
+abline(h=-1,col="blue")
+abline(h=1,col="blue")
+abline(h=2,col="green")
+abline(h=-2,col="green")
+abline(h=3,col="red")
+abline(h=-3,col="red")
+
+plot(vecteurloinormale100, xlab="Valeurs n=100, mean=0 et sd=1")
+abline(h=0)
+abline(h=-1,col="blue")
+abline(h=1,col="blue")
+abline(h=2,col="green")
+abline(h=-2,col="green")
+abline(h=3,col="red")
+abline(h=-3,col="red")
+
+plot(vecteurloinormale1000, xlab="valeurs n=1000, mean=0 et sd=1 ")
+abline(h=0)
+abline(h=-1,col="blue")
+abline(h=1,col="blue")
+abline(h=2,col="green")
+abline(h=-2,col="green")
+abline(h=3,col="red")
+abline(h=-3,col="red")
+
+par(mfrow=c(1,3))
+plot(cauchy, xlab="Valeurs n=100, location=0 et scale=1")
+abline(h=0)
+abline(h=-1,col="blue")
+abline(h=1,col="blue")
+abline(h=2,col="green")
+abline(h=-2,col="green")
+abline(h=3,col="red")
+abline(h=-3,col="red")
+
+plot(cauchy200, xlab="Valeurs n=200, location=0 et scale=1")
+abline(h=0)
+abline(h=-1,col="blue")
+abline(h=1,col="blue")
+abline(h=2,col="green")
+abline(h=-2,col="green")
+abline(h=3,col="red")
+abline(h=-3,col="red")
+
+plot(cauchy300, xlab="Valeurs n=300, location=0 et scale=1")
+abline(h=0)
+abline(h=-1,col="blue")
+abline(h=1,col="blue")
+abline(h=2,col="green")
+abline(h=-2,col="green")
+abline(h=3,col="red")
+abline(h=-3,col="red")
+
+```
+
+## Commentaires
+
+Concernant les lois normales à 40, 100 et 1000 valeurs, l'ensemble des points se situent principalement dans la zone [-1,1] et autour de 0. Cela s'explique par l'hypothèse faite sur la variance, qui se situe entre -1 et 1 etla distribution, qui se centre autour de 0. Plus il y a de valeurs et plus il y a des valeurs qui s'éloignent du centre, ce qui est normal. Cependant, très rares sont les valeurs qui s'éloignent de plus 3 unités du centre.
+
+Concernant la distribution de Cauchy, bien que le nombre de valeurs augmente, il y a très peu de valeur qui s'éloignent du centre. Cependant, contrairement à la distribution de loi normale, dès qu'une valeur s'éloigne, elle peut s'éloigner très loin du centre. 
+
+## Histogrammes
+
+````{r}
+
+par(mfcol=c(1,4))
+hist(vecteurloinormale100,main=paste("Loi normales n=100"))
+hist(cauchy,main=paste("Cauchy n=100"))
+hist(cauchy200,main=paste("Cauchy n=200"))
+hist(cauchy300,main=paste("Cauchy n=300"))
+library(moments)
+````
+
+## Commentaires
+
+Les histogrammes confirment les observations précédentes. Pour les lois normales avec n=100, mean=0 et sd=1 , plus on se rapproche du centre et plus il y a des valeurs. On retrouve bien la forme d'une loi normale. 
+
+Concernant les lois de cauchy qui ont toutes pour location 0 et pour échelle 1, toutes les valeurs se situent autour du centre. Cependant, il y a quelques valeurs très éloigné du centre. Il y a donc 1 grand pic de valeurs et plusieurs petits pics contenant 1 ou 2 valeurs très éloigné du centre.
+
+## Moments d'ordres supérieurs
+
+````{r}
+momentsordres<-data.frame(
+loinormale100.skewness=skewness(vecteurloinormale100),                          loinormale1000.skewness=skewness(vecteurloinormale1000),
+loinormale.skewness=skewness(vecteurloinormale),                          loinormale100..kurtosis=kurtosis(vecteurloinormale100),                        loinormale1000.kurtosis=kurtosis(vecteurloinormale1000), loinormale.kurtosis=kurtosis(vecteurloinormale), loinormale100.moyenne=mean(vecteurloinormale100),
+loinormale1000.moyenne=mean(vecteurloinormale1000),
+loinormale.moyenne=mean(vecteurloinormale),
+loinormale100.variance=var(vecteurloinormale100), loinormale1000.variance=var(vecteurloinormale1000), loinormale.variance=var(vecteurloinormale))
+
+
+Momentsdordres<-write.csv(momentsordres,"~/Travail/ecole ingé/Stats/TP1/Moments d'ordres")
+read.csv("~/Travail/ecole ingé/Stats/TP1/Moments d'ordres",header=TRUE)
+
+
+
+
+```
+
+## Commentaires
+
+Les moments d'ordres nous apportent des informations complémentaires sur nos échantillons.
+Tout d'abord, on obtient l'espérance/moyenne ainsi que la variance de notre loi. VAce la fonction skewness (qui correspond au moment d'ordre 3), si c'est positif, la densité penche vers la droite et vers la gauche si c'est négatif. Avec la fonctions kurtosis (qui correspond au moment d'ordre 4), si c'est positif, la densité à des queues plus épaisses que celles d'une gaussienne. Si c'est négatif, la densité à des queues qui décroissent plus vite qu'une loi normale. 
+
+
+## Boxplot et quantiles
+
+```{r pressure, echo=FALSE}
+
+par(mfrow=c(1,3))
+boxplot(vecteurloinormale, main="Répartition LN n=40")
+
+boxplot(vecteurloinormale100, main="Répartition LN n=100")
+
+boxplot(vecteurloinormale1000, main="Répartition LN n=1000")
+
+par(mfrow=c(1,3))
+boxplot(cauchy, main="Répartition cauchy n=100")
+
+boxplot(cauchy200, main="Répartition cauchy n=200")
+
+boxplot(cauchy300, main="Répartition chauchy n=300")
+
+quantile<-data.frame(quantile(vecteurloinormale100),quantile(vecteurloinormale1000),quantile(vecteurloinormale))
+
+Quantile<-write.csv(quantile,"~/Travail/ecole ingé/Stats/TP1/Quantile ")
+read.csv("~/Travail/ecole ingé/Stats/TP1/Quantile ",header=FALSE)
+
+```
+
+
+## Commentaires
+
+Les boxplots permettent de voir où se situent les valeurs par rapport au centre et aux différentd quantiles. Ce qu'on remarque notamment, c'est que pour les distributions de lois normales, il y peu de valeurs en dehors de la boite et si elles sont en dehors, elles sont proches du premier ou dernier quantile.
+Pour les lois de Cauchy, il y a aussi des valeurs en dehors des limitations de la boite mais elles sont très loin du premier ou denrier quantile. Cela confirme encore une fois les remarques faites avec les histogrammes.
+
+
+## Interprétation visuelle
+
+````{r}
+
+cauchy1<-c(cauchy100=rcauchy(n=100,location=0,scale=5))
+cauchy2<-c(cauchy200=rcauchy(n=100, location=10,scale=0.5))
+cauchy3<-c(cauchy300=rcauchy(n=100,location=-5,scale=3))
+
+par(mfrow=c(1,3))
+
+plot(cauchy1, xlab="Valeurs prises n=100, l=0, s=5")
+abline(h=0)
+abline(h=-1,col="blue")
+abline(h=1,col="blue")
+abline(h=2,col="green")
+abline(h=-2,col="green")
+abline(h=3,col="red")
+abline(h=-3,col="red")
+
+
+boxplot(cauchy1, xlab="Répartition cauchy n=100,l=0, s=5")
+
+hist(cauchy1,xlab="Histogramme cauchy n=100,l=0, s=5")
+
+momentsordrescauchy1<-data.frame(cauchy1.skewness=skewness(cauchy1), cauchy1.kurtosis=kurtosis(cauchy1),cauchy1.esperance=mean(cauchy1), cauchy1.variance=var(cauchy1))       
+
+
+Momentsdordrescauchy1<-write.csv(momentsordrescauchy1,"~/Travail/ecole ingé/Stats/TP1/Moments d'ordres cauchy n=100, l=0, s=5")
+read.csv("~/Travail/ecole ingé/Stats/TP1/Moments d'ordres cauchy n=100, l=0, s=5",header=TRUE)
+
+````
+
+
+## Commentaires sur cette répartition avec n=100, location=0 et scale=5
+
+Ici, on remarque que l'esperance est supérieure à la location fixée. Cela peut s'expliquer par les quelques valeurs situées loins de la location. Cela augmente(ou diminue) fortement l'espérance ainsi que cela influe énormement sur la variance, d'où cette variance élevée.
+
+````{r}
+
+par(mfrow=c(1,3))
+plot(cauchy2, xlab="Valeurs prises n=100, l=10, s=0.5")
+abline(h=10)
+abline(h=5,col="blue")
+abline(h=15,col="blue")
+abline(h=0,col="green")
+abline(h=20,col="green")
+abline(h=8,col="red")
+abline(h=12,col="red")
+
+boxplot(cauchy2, xlab="Répartition cauchy n=100, l=10, s=0.5") 
+
+hist(cauchy2,xlab="Histogramme cauchy n=100, l=10, s=0.5")
+
+momentsordrescauchy2<-data.frame(cauchy2.skewness=skewness(cauchy2), cauchy2.kurtosis=kurtosis(cauchy2),cauchy2.esperance=mean(cauchy2), cauchy2.variance=var(cauchy2))      
+
+Momentsdordrescauchy2<-write.csv(momentsordrescauchy2,"~/Travail/ecole ingé/Stats/TP1/Moments d'ordres cauchy n=100, l=10, s=0.5")
+read.csv("~/Travail/ecole ingé/Stats/TP1/Moments d'ordres cauchy n=100, l=10, s=0.5",header=TRUE)
+````
+
+
+## Commentaires sur cette répartition avec n=100, location=10 et s=0.5
+
+Ici, l'espérance est proche de la location prévue donc il y a quelques valeurs éloignées de la location mais elles restent assez proches pour ne pas influer sur l'espérance, ce qui explique cette faible variance par rapport à la variance précédente.
+
+````{r}
+
+par(mfrow=c(1,3))
+plot(cauchy3, xlab="Valeurs prises n=100, l=-5, s=3")
+abline(h=-5)
+abline(h=-8,col="blue")
+abline(h=-2,col="blue")
+abline(h=0,col="green")
+abline(h=-10,col="green")
+abline(h=-4,col="red")
+abline(h=-9,col="red")
+
+boxplot(cauchy3, xlab="Répartition cauchy n=100, l=-5, s=3")
+
+hist(cauchy3,xlab="Histogramme cauchy n=100, l=-5, s=3")
+
+momentsordrescauchy3<-data.frame(cauchy3.skewness=skewness(cauchy3), cauchy3.kurtosis=kurtosis(cauchy3),cauchy3.esperance=mean(cauchy3), cauchy3.variance=var(cauchy3))        
+
+Momentsdordrescauchy3<-write.csv(momentsordrescauchy3,"~/Travail/ecole ingé/Stats/TP1/Moments d'ordres cauchy n=100, l=-5, s=3")
+read.csv("~/Travail/ecole ingé/Stats/TP1/Moments d'ordres cauchy n=100, l=-5, s=3",header=TRUE)
+````
+
+## Commentaires sur cette répartition avec n=100, location=-5 et scale=3
+
+Comme précédement, on remarque que l'espérance est proche de la location, ce qui est logique. Il y a beaucoup de valeurs proches de la location et les quelques valeurs éloignées influent légèrement sur l'espérance puisqu'elle est supérieure à la location. C'est pourquoi la variance est la aussi élevée.
+
+Ce que l'on peut conclure ici, c'est que plus on impose une échelle élevée, plus il y a des risques d'avoir des valeurs éloignées de la location et donc plus notre variance est importante et plus notre espérance s'éloigne de la location.
+
+## Conclusion du TP
+
+Ce TP m'a permis de prendre en main le logiciel R encore inconnu jusqu'ici. Il m'a permis aussi d'apprendre les bases de la statistiques avec des histogrammes ou même des boxplots qui permettent de représenter visuellement une densité de loi et qui permettent d'en déduire des caractéristiques. Malheureusement, je n'ai pu extraire le fichier Data.txt qui m'aurait permis de faire une application directe de ce TP avec des choses de la vie quotidienne.
+
