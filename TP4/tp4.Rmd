@@ -1,0 +1,223 @@
+---
+title: "TP4"
+author: "Gautier Poursin"
+date: "03/05/2020"
+output: 
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Exercice 1
+
+On va commencer par télécharger les variables dans un data frame.
+
+```{r cars}
+data<- read.csv('QI.txt',sep="")
+```
+
+On va ensuite s'intéresser aux variables par une étude descriptives de ces variables.
+
+```{r pressure, echo=FALSE}
+etude_variable <- function(c, nom) {
+  m<-sum(c)/length(c)
+  c[is.na(c)] <- m
+  cat("La moyenne est de",m, "et la variance de ", var(c),".\n")
+  par(mfrow=c(2,2))
+  hist(c,main=nom,cex.main=1)
+  boxplot(c, main=nom,horizontal = TRUE,cex.main=1)
+}
+etude_variable(data$x," QI des enfants dislexiques")
+```
+
+A la vue des résultats, on peut déduire que le QI des personnes dislexiques est similaires aux personnes non dislesiques. En effet, ils possèdent en moyenne un QI de 98,4, qui est très proche de celui des personnes non dislexiques.
+
+## 3 
+
+Tout d'abord, nous allons vérifier si notre échantillon peut suivre une loi gaussienne en le centrant puis en le normalisant. Ensuite nous tracerons l'histogramme associée à cette loi centrée réduite et nous regarderons l'allure de la loi.
+\\
+Enfin, nous effectuerons un test statistiques pour la moyenne d'une loi normale avec la variance connue.
+
+```{r}
+etude_variable_centree_reduite<-function(c){
+  hist((c-sum(c)/length(c))/(sqrt(var(c))),main="Histogramme de la variable centrée réduite",cex.main=1)
+}
+ etude_variable_centree_reduite(data$x)
+
+```
+
+Ce graphique montre qu'il est possible d'affirmer que cette loi suit une loi gaussienne. On a pas réellement la forme d'une loi gaussienne lorsqu'on centre et réduit la loi mais on s'approche de l'allure d'une gaussienne. On peut imaginer qu'avec un nombre conséquent de valeurs, nous aurions bien l'allure d'une gaussienne.
+\\
+Pour confirmer cela, on peut effectuer une comparaison de quantiles ou un test de shapiro.
+```` {r}
+shapiro.test(rnorm(100, mean = sum(data$x)/length(data$x), sd = var(data$x)))
+
+````
+
+La pvalue ici est assez élevée pour confirmer le fait que l'on  suit une loi Gaussienne.
+\\
+On peut aussi réaliser un diagramme Quantile/Quantile:
+````{r}
+
+qqnorm(data$x, datax=TRUE, main="Quantile du QI des enfants dislexiques")
+qqline(data$x,datax=TRUE)
+````
+
+Ce diagramme confirme bien le fait que l'on suit une loi normale.Les quantiles sont proches de la droite.
+
+## 5
+
+On va tout d'abord définir les hypothèses: 
+$H_0: \mu = \mu_0$, $H_1: \mu != \mu_0$
+Notre variance est inconnue. On a a statistique de test suivante: $\sigma_n=\frac{sqrt(n)(\hat{X_n} - \mu_0)}{S_n}$. De plus, l'énoncé nous indique $\mu_0=100$
+````{r}
+statistique_test<-function(n,c) {sqrt(n)*(sum(c-100)/length(c))/sd(c)}
+statistique_test(30,data$x)
+````
+
+On va maintenant déterminer la zone de rejet pour cette statistique de test, avec $\alpha=0.05$.
+On rejette l'hypothèse si $statistique\_test >F_{T_{n-1}}^{-1}(0.95)$ avec F fonction de répartition d'une loi de Student de degré de liberté n-1. 
+````{r}
+Ka<-function (x,n) {qt(x,n-1)}
+Ka(0.95,30)
+````
+
+On rejette l'hypothèse si $\hat X_n > \mu_0 +\frac{S_n}{\sqrt(n)}F_{T_{n-1}}^{-1}(1-\alpha)$.
+
+````{r}
+Mean<-function(c,n) {sum(c)/n}
+Ka1<-function(n,c){100+sd(c)/(n^0.5)*Ka(0.95,30)}
+Mean(data$x,30)
+Ka1(30,data$x)
+````
+
+Ici, nous n'avons pas $\hat X_n > \mu_0 +\frac{S_n}{\sqrt(n)}F_{T_{n-1}}^{-1}(1-\alpha)$ donc on garde l'hypothèse de test!
+
+## 6
+
+On va utiliser la fonction t.test:
+````{r}
+t.test(data$x,mu=100,conf.level =0.9)
+````
+
+Ici, notre pvalue est supérieure à 0.1, ce qui est nécessaire lorsqu'on souhaite avoir un intevral de confiance au niveau 90%.
+````{r}
+t.test(data$x,mu=100,conf.level =0.95)
+````
+
+On remarque aussi qu'on obtient immédiatement l'interval de confiance avec cette commande t.test.
+L'interval de confiance à 95% est plus grand car on souhaite avoir plus de valeurs que dans celui a 90%.
+
+## Exercice 2
+
+On va commencer par télécharger les variables dans un data frame.
+
+```{r }
+birth<- read.csv('birthwt.txt',sep="")
+
+etude_birth <- function(c, nom) {
+  m<-sum(c)/length(c)
+  cat("La moyenne est de",m, "et la variance de ", var(c),".\n")
+  par(mfrow=c(2,2))
+  hist(c,main=nom,cex.main=1)
+  boxplot(c, main=nom,horizontal = TRUE,cex.main=1)
+}
+etude_birth(birth$bwt,"Poids des bébés")
+qqnorm(birth$bwt, datax=TRUE, main="Quantile du poids des bébés")
+qqline(birth$bwt,datax=TRUE)
+```
+
+Le poids des bébés semble suivre une loi Normale.
+````{r}
+etude_birth(birth$lwt,"Poids des mamans")
+qqnorm(birth$lwt, datax=TRUE, main="Quantile du poids des mamans")
+qqline(birth$lwt,datax=TRUE)
+````
+
+il est plus difficle d'affirmer que le poids des mamans suit une loi normale, on va effectuer un test de shapiro:
+```` {r}
+shapiro.test(rnorm(130, mean = sum(birth$lwt)/length(birth$lwt), sd = var(birth$lwt)))
+````
+
+Le test de shapiro nous apporte l'information que c'est bien une loi normale.
+
+## 2a.
+
+Pour répondre à la question, nous allons mettre en place une série de test, comme pour l'exercice 1.On déterminera la statistique de test puis nous calculerons la zone de rejet afin de déterminer si on garde notre hypothèse ou non. 
+````{r}
+statistique_test<-function(n,c) {sqrt(n)*(sum(c-130)/length(c))/sd(c)}
+statistique_test(length(birth$lwt),birth$lwt)
+````
+
+On rejette l'hypothèse si $statistique\_test >F_{T_{n-1}}^{-1}(0.95)$ avec F fonction de répartition d'une loi de Student de degré de liberté n-1. 
+
+````{r}
+Ka<-function (x,n) {qt(x,n-1)}
+Ka(0.95,length(birth$lwt))
+
+mean<-function(c,n) {sum(c)/n}
+Ka2<-function(n,c){130+sd(c)/(n^0.5)*Ka(0.95,length(c))}
+mean(birth$lwt,length(birth$lwt))
+Ka2(length(birth$lwt),birth$lwt)
+````
+
+Ici, la moyenne empirique est inférieure à Ka2 donc nous $\textbf{conservons l'hypothèse de test!}$
+
+## 2c.
+
+````{r}
+t.test(birth$lwt,mu=130)
+````
+
+Les valeurs de ce test sont en rapport avec nos valeurs calculées! En effet, on retrouve bien que la valeur de la statistique est de -0.08. De plus, nous obtenons un interval de confiance à 95%. La forte pvalue confirme l'hypothèse, on conserve notre hypothese.
+
+## 3.
+
+On s'interesse maintenant à la proportion de femme touchées par l'hypertension lors de leur grossesse. On va déterminer la statistique de test. 
+````{r}
+statistique_test<-function(n,c) {sqrt(n)*(sum(c-130)/length(c))/sd(c)}
+statistique_test(length(birth$ht),birth$ht)
+````
+On rejette l'hypothèse si $statistique\_test >F_{T_{n-1}}^{-1}(0.95)$ avec F fonction de répartition d'une loi de Student de degré de liberté n-1.
+````{r}
+Ka<-function (x,n) {qt(x,n-1)}
+Ka(0.95,length(birth$lwt))
+
+mean<-function(c,n) {sum(c)/n}
+Ka3<-function(n,c){0.11+sd(c)/(n^0.5)*Ka(0.95,length(c))}
+mean(birth$ht,length(birth$ht))
+Ka3(length(birth$ht),birth$ht)
+````
+
+Ici, nous sommes contraint de rejetter l'hypothèse de test! Noux avons $statistique\_test >F_{T_{n-1}}^{-1}(0.95)$.
+
+````{r}
+prop.test(sum(birth$ht),p=0.11,n=189,correct=FALSE)
+````
+
+La faible p-value confirme le rejet de notre hypothèse.
+
+## 3b.
+
+```{r}
+prop.test(sum(birth$ht[birth$low>0]),n=sum(birth$low>0),p=0.11)
+prop.test(sum(birth$ht[birth$low<1]),n=sum(birth$low<1),p=0.11)
+```
+
+Dans notre premier cas, la pvalue est élevé donc nous confirmons l'hypothèse de test. Lorsqu'on passe au deuxième cas, la pvalue est très faible donc on rejette l'hypothèse de test.
+## 4.
+
+```{r}
+etude_variable(birth$bwt,"")
+t.test(birth$bwt,mu=3300,conf.level=0.90)
+```
+
+Le poids moyen des bébés suit donc lui aussi une loi normale. Cependant, le poids moyen s'éloigne de poids de référence: il s'éloigne de 400g puisque en moyenne, les bébés de l'études pèsent 2.9kg. D'ailleurs, cette très faible valeur de la pvalue confirme le rejet de l'hypothèse de base qui était ce poids moyen des bébés à la naissance. Les bébés ne sont pas représentatifs du poids moyen.
+
+## Conclusion
+
+Ce TP m'a permis d'avoir une meilleure vision des tests et surtout de savoir mettre en place des tests informatiquement. J'ai pu aussi remarquer l'importance de la p-value, qui permet de de s'assurer si le rejet ou la conservation d'une hypothèse est une bonne chose ou non. Lorsque la pvalue est faible, il faut rejetter l'hypothèse. Sinon, on conserve notre hypothèse émise.
