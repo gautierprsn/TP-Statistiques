@@ -1,0 +1,319 @@
+---
+title: "TP 3"
+author: "Gautier Poursin"
+date: "13/03/2020"
+output: pdf_document
+---
+
+## Maximum de vraisemblance
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## 1. Ajuster une loi Bernoulli
+
+## a. 
+
+p correspond à la proba P(X=1). Il faut donc faire plusieurs échantillons puis ensuite faire la moyenne des résultats obtenus pour obtenir p.
+
+## b.
+
+```{r cars}
+
+bern<-rbinom (n=10,p=0.7, size=1)
+
+L_bern <- function (bern, p=0.7){
+  produit = (p**sum(bern)*(1-p)**(length(bern)-sum(bern)))
+}
+
+Vraisemblance=L_bern(bern)
+print(bern)
+print(Vraisemblance)
+```
+
+## c.
+
+```{r pressure, echo=FALSE}
+
+vraisemblance=rep(1:100)
+
+L_bern_p_variant <-function (bernoulli, p){
+vraisemblance=(p**sum(bernoulli)*(1-p)**(length(bernoulli)-sum(bernoulli)))}
+
+Bernoulli<-rbinom(n=100, p=0.5, size=1)
+p=rep(1:100)
+for (i in 1:100) p[i]=i/100
+print(L_bern_p_variant(Bernoulli,p))
+plot(p,L_bern_p_variant(Bernoulli,p))
+abline(v=0.5)
+
+```
+
+Ici, pour estimer le paramètre, on doit maximiser la vraisemblance obtenue pour déterminer le paramètre. On a tracé pour p=0,5 et le maximu de vraisemblance est atteint en $p^*\simeq0.5$
+
+## d.
+
+```{r}
+optimze_bernoulli<-function(p){
+  Bernoulli=rbinom(n=100,size=1, p=0.5)
+  resul=L_bern_p_variant(Bernoulli,p)
+}
+
+max_optimize=optimize(optimze_bernoulli, rep(1:100)/100, maximum=TRUE)
+print(max_optimize)
+```
+
+Le maximum obtenu avecla fonction maximize est bien similaire à notre paramètre p.
+
+## e.
+
+```{r paste}
+
+optimze_bernoulli_20<-function(p){
+  B20=rbinom(n=20,p=0.5,size=1)
+  resul=L_bern_p_variant(B20,p)
+}
+
+max_optimize_20=optimize(optimze_bernoulli_20, rep(1:100)/100, maximum=TRUE)
+print(max_optimize_20)
+
+optimze_bernoulli_100<-function(p){
+  B100=rbinom(n=100,p=0.5,size=1)
+  resul=L_bern_p_variant(B100,p)
+}
+
+max_optimize_100=optimize(optimze_bernoulli_100, rep(1:100)/100, maximum=TRUE)
+print(max_optimize_100)
+
+optimze_bernoulli_500<-function(p){
+  B500=rbinom(n=500,p=0.5,size=1)
+  resul=L_bern_p_variant(B500,p)
+}
+
+max_optimize_500=optimize(optimze_bernoulli_500, rep(1:100)/100, maximum=TRUE)
+print(max_optimize_500)
+
+optimze_bernoulli_1000<-function(p){
+  B1000=rbinom(n=1000,p=0.5,size=1)
+  resul=L_bern_p_variant(B1000,p)
+}
+
+max_optimize_1000=optimize(optimze_bernoulli_1000, rep(1:100)/100, maximum=TRUE)
+print(max_optimize_1000)
+
+optimze_bernoulli_1500<-function(p){
+  B1500=rbinom(n=1500,p=0.5,size=1)
+  resul=L_bern_p_variant(B1500,p)
+}
+
+max_optimize_1500=optimize(optimze_bernoulli_1500, rep(1:100)/100, maximum=TRUE)
+print(max_optimize_1500)
+
+optimze_bernoulli_2000<-function(p){
+  B2000=rbinom(n=2000,p=0.5,size=1)
+  resul=L_bern_p_variant(B2000,p)
+}
+
+max_optimize_2000=optimize(optimze_bernoulli_2000, rep(1:100)/100, maximum=TRUE)
+print(max_optimize_2000)
+
+
+
+ecart<- as.numeric(c(max_optimize_20,max_optimize_100,max_optimize_500,max_optimize_1000,max_optimize_1500,max_optimize_2000))
+
+for (i in 1:length(ecart)) ecart[i]=ecart[i]-0.5
+paste("l'écart pour n= 20 est ", ecart[1],sep="")
+
+paste("l'écart pour n= 100 est ", ecart[3],sep="")
+
+paste("l'écart pour n= 500 est " ,ecart[5],sep="")
+
+paste("l'écart pour n= 1000 est ", ecart[7],sep="")
+
+paste("l'écart pour n= 1500 est ",ecart[9],sep="")
+
+paste("l'écart pour n= 2000 est ",ecart[11],sep="")
+
+```
+
+on peut donc conclure qu'à partir d'un certain n, la précision n'est plus bonne. Cela est du à l'instabilité numérique, qui augmente au fur et a mesure qu'il y ait des calculs.
+Pour éviter cette instabilité, il est possible d'utiliser la fonction logarithme.
+
+## f.
+
+```{r}
+
+Distribinc<-write.csv("distribution_inconue_2_100_realisations.csv")
+
+distrib<-read.csv("distribution_inconue_2_100_realisations.csv", header=TRUE)
+
+optimze_bernoulli<-function(p){
+  resul=L_bern_p_variant(distrib[2],p)
+  return(resul)
+}
+
+mean_distrib<-sum(distrib[2])/100
+paste("la moyenne de cette distribution inconnue est ", mean_distrib,sep="")
+
+max_optimize_distrib=optimize(optimze_bernoulli, rep(1:100)/100, maximum=TRUE)
+print(max_optimize_distrib)
+```
+
+Le maximum obtenu ici vaut 0.99, mais ce maximum n'est pas valide. En effet, la moyenne vaut 0.58 et l'estimateur devrait se rapprocher de cette valeur.
+
+## ajuster une loi normale d'écart connu
+
+## a.
+
+```{r}
+mu=2
+sigma=1
+N=30
+
+Normale<-rnorm(N,mu,sigma)
+
+L_norm<-function (mu,sigma,X){
+  produit=1
+  for (i in 1:length(X)) produit=produit*dnorm(X[i],mean=mu,sd=sigma)
+  return(produit)
+}
+```
+
+## b.
+
+```{r}
+
+Mu=rep(1:100)
+
+for (i in 1:100) Mu[i]=i/100*4
+vraisemblance_normale=L_norm(Mu,sigma,Normale)
+
+plot(Mu,vraisemblance_normale)
+abline(v=2)
+```
+
+On retrouve bien que le maximum de vraisemblance est atteint pour mu=2.
+
+## c.
+
+```{r}
+max_optimize_normale=optimize(function(mu) {L_norm(mu,sigma,Normale)}, 4*rep(1:100)/100, maximum=TRUE)
+print(max_optimize_normale[1])
+```
+
+## d.
+
+````{r}
+for (N in c(10,100,500,1000,1500,2000)){
+  normale=rnorm(N,mu,sigma)
+  max_optimize_normale=optimize(function(mu) {L_norm(mu,sigma,normale)}, 4*rep(1:100)/100, maximum=TRUE)
+  print(N)
+  print(max_optimize_normale[1])
+}
+```
+
+```{r}
+
+Log_norm<-function (mu,sigma,X){
+  somme=0
+  for (i in 1:length(X)) somme=somme+ log(dnorm(X[i],mean=mu,sd=sigma))
+  return(somme)
+}
+
+for (N in c(10,100,500,1000,1500,2000)){
+  normale=rnorm(N,mu,sigma)
+  max_optimize_normale=optimize(function(mu) {Log_norm(mu,sigma,normale)}, 4*rep(1:100)/100, maximum=TRUE)
+  print(N)
+  print(max_optimize_normale[1])
+}
+```
+
+On voit bien qu'en utilisantle logarithme, on a supprimé ces erreurs d'instabilités.
+
+## Ajuster une loi à plusieurs paramètres
+
+## 1.
+
+Voici a quoi ressemble la vraisemblance pour la loi exponentielle translatée :
+
+$\mathcal{L}(x_{1}, ..., x_{n};(\lambda, L)) = \log(\, \prod\limits_{i = 1}^{n}\lambda e^{-\lambda (x_{i}-L}) = n\log (\lambda)+n\lambda L-\lambda\sum\limits_{i = 1}^{n}x_{i}$
+
+
+```{r}
+lambda=2
+L=4
+echantillon_exp=rexp(n=50,rate=1)/lambda+L
+Log_exp<-function (L,lambda){
+  return(sum(log(lambda*exp(-lambda*(echantillon_exp-L)))))
+}
+
+library("stats4")
+library("ggplot2")
+
+lambda=seq(2,length.out = 50)
+L=seq(0.1,4,length.out=50)
+vraisemblance=matrix(1,50,50)
+
+for (i in 1:50){
+  for(j in 1:50)
+    vraisemblance[i,j]=Log_exp(L[i],lambda[j])
+}
+contour(L,lambda,vraisemblance)
+abline(v=2,h=4,col="red")
+```
+
+## 2.
+
+Voici à quoi ressemble la vraisemblance pour la loi de Cauchy :
+
+$\mathcal{L}(x_{1}, ..., x_{n};(x_{0}, \alpha)) = \log(\, \prod\limits_{i = 1}^{n}\frac{1}{\pi}\frac{\alpha}{(x_{i}-x_{0})^2+\alpha^2}) = n\log(\frac{\alpha}{\pi})-\sum\limits_{i = 1}^{n}\log((x_{i}-x_{0})^2+\alpha^2)$
+
+
+````{r}
+
+alpha=0.4
+x0=-2
+echantillon_cauchy=rcauchy(n=50,location=x0,scale=alpha)
+Log_cauchy<-function(alpha,x0){
+  return(sum(log((1/pi)*alpha/((echantillon_cauchy-x0)**2+alpha**2))))
+}
+x0=seq(-4.0,length.out = 50)
+Alpha=seq(0.1,4,length.out=50)
+vraisemblance=matrix(1,50,50)
+
+for (i in 1:50){
+  for(j in 1:50)
+    vraisemblance[i,j]=Log_cauchy(Alpha[i],x0[j])
+}
+
+contour(x0,Alpha,vraisemblance)
+abline(v=-2,h=0.4,col="red")
+````
+
+Utilisons le solveur mle de la librairie stats4.
+
+````{r}
+
+minusLogCau <- function(alpha, x0){ return(-Log_cauchy(alpha, x0)); }
+
+minusLogExp <- function(lambda, L){ return(-Log_exp(L,lambda)); }
+mleCau = c(0, 0);
+mleExp = c(0, 0);
+
+mleCau = mle(minuslogl = minusLogCau, start = list(alpha =0.4, x0 =-2))
+mleExp = mle(minuslogl = minusLogExp, start = list(lambda =4), fixed=(list(L= 4)))
+
+
+print(mleCau)
+print(mleExp)
+```
+
+Les résultats trouvés pour alpha et x0 sont satisfaisant, tandis que celui pour lambda ne l'est pas. On remarque un écart entre les 2 résultats.
+
+## Conclusion
+
+Dans ce TP, nous avons vu la méthode des estimateurs de vraisemblance. Cela nous a permis de déterminer  le maximum de vraisemblance pour l'échantillon fourni. Il y a cependant une erreur de code puisque celui ci renvoie 0.99(question f) alors que le maximum est de 0.58. 
+Concernant la seconde partie, nous avons travaillé avec une loi normale d'écart type connu. Nous avons tracé la courbe et le maximum de vraisemblance correspond bien à la valeur de ntore paramètre. Puis, nous avons essayé d'éviter les instabilité causés par le calcul du maximum lorsque N devient grand. Pour cela, nous avons utlisé le logarithme, qui supprime bien les erreurs (voir question 2.d).
+Enfin, nous avons travaillé avec des lois à plusieurs paramètres. Les résultats obtenus par les contours ne m'ont pas permis de conclure quelque chose. Mais avec le mle, nous avons retrouvé les valeurs de alpha et xo.
